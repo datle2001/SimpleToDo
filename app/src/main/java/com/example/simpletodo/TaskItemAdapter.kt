@@ -1,10 +1,29 @@
 package com.example.simpletodo
 
+import android.R
+import android.R.attr
+import android.R.attr.*
+import android.content.res.AssetManager
+import android.content.res.AssetManager.AssetInputStream
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import android.graphics.drawable.GradientDrawable
+import androidx.core.view.marginBottom
+
+import android.graphics.Typeface
+import android.util.Log
+import android.view.ViewGroup.MarginLayoutParams
+import android.view.animation.AlphaAnimation
+import android.view.animation.DecelerateInterpolator
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.get
+import java.security.AccessController.getContext
+import java.util.logging.Handler as Handler
+
 
 class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLongClickListener, val shortClickListener: OnShortClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
 
@@ -41,11 +60,13 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
         //Store references to elements in our layout view
-        val textView : TextView
+        val textView : TextView = itemView.findViewById(R.id.text1)
 
         init{
-            textView = itemView.findViewById(android.R.id.text1)
+            styleTextView()
+
             itemView.setOnLongClickListener{
                 longClickListener.onItemLongClicked(adapterPosition)
                 true
@@ -54,6 +75,20 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
                 shortClickListener.onItemShortClicked(adapterPosition)
                 true
             }
+        }
+        fun styleTextView() {
+            textView.setTextColor(Color.parseColor("#ffdf00"))
+            textView.setTextSize(20F)
+            textView.typeface = Typeface.MONOSPACE
+            textView.minHeight = 150
+
+            if (textView.getLayoutParams() is MarginLayoutParams) {
+                (textView.getLayoutParams() as MarginLayoutParams).setMargins(20, 20, 20, 0)
+                textView.requestLayout()
+            }
+            val gd = GradientDrawable()
+            gd.setColor(Color.parseColor("#f0fff0"))
+            textView.background = gd
         }
     }
 }

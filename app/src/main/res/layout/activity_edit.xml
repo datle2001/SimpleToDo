@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/pastel_green"
     tools:context=".EditActivity">
 
     <Button
@@ -23,8 +24,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:ems="10"
+        android:fontFamily="sans-serif-medium"
         android:minHeight="48dp"
         android:textAlignment="center"
+        android:textCursorDrawable="@drawable/color_cursor"
         app:layout_constraintBottom_toTopOf="@+id/editButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

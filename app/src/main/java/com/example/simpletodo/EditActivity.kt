@@ -14,6 +14,7 @@ class EditActivity: AppCompatActivity() {
 
         val editTaskField = findViewById<EditText>(R.id.editTaskField)
         editTaskField.setText(getIntent().getStringExtra("taskName"))
+        editTaskField.setTextSize(25f)
 
         findViewById<Button>(R.id.editButton).setOnClickListener{
             val input = editTaskField.text.toString()
