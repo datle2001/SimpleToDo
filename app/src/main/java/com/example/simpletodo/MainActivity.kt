@@ -5,11 +5,11 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.animation.AlphaAnimation
 import android.view.animation.DecelerateInterpolator
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
@@ -23,15 +23,30 @@ import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
 
-    var listOfTasks = mutableListOf<String>()
+    var listOfTasks = mutableListOf<Task>()
     var post = 0
     lateinit var adapter : TaskItemAdapter
 
-    private val getResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val editTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK){
-            val value = it.data?.getStringExtra("alternative")
-            listOfTasks.set(post, value.toString())
+            val name = it.data?.getStringExtra("editedTaskName").toString()
+            val due = it.data?.getStringExtra("editedDueDate").toString()
+            val note = it.data?.getStringExtra("editedNote").toString()
+            listOfTasks[post].taskName = name
+            listOfTasks[post].dueDate = due
+            listOfTasks[post].note = note
             adapter.notifyDataSetChanged()
+            saveItems()
+        }
+    }
+    private val addTask = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK){
+            val taskName = it.data?.getStringExtra("taskName").toString()
+            val dueDate = it.data?.getStringExtra("dueDate").toString()
+            val note = it.data?.getStringExtra("note").toString()
+            val task = Task(taskName, dueDate, note)
+            listOfTasks.add(task)
+            adapter.notifyItemInserted(listOfTasks.size - 1)
             saveItems()
         }
     }
@@ -48,7 +63,7 @@ class MainActivity : AppCompatActivity() {
                 fadeOut.duration = 1000
                 findViewById<RecyclerView>(R.id.recyclerView)[position].startAnimation(fadeOut)
 
-                Handler().postDelayed(Runnable {
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
                     listOfTasks.removeAt(position)
                     adapter.notifyDataSetChanged()
                     saveItems()
@@ -74,29 +89,33 @@ class MainActivity : AppCompatActivity() {
         // Set layout manager to position the items
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        findViewById<Button>(R.id.button).setOnClickListener{
-            val addTaskField = findViewById<EditText>(R.id.addTaskField)
-            val input = addTaskField.text.toString().trim()
-            if(input.isNotEmpty()) {
-                listOfTasks.add(input)
-                adapter.notifyItemInserted(listOfTasks.size - 1)
-                addTaskField.setText("")
-                saveItems()
-            }
+        findViewById<ImageView>(R.id.addButton).setOnClickListener{
+            launchAddView()
         }
     }
     //save the data
     //create a method to get the data file
-    fun getDataFile() : File {
+    private fun getDataFile() : File {
         return File(filesDir, "data.txt")
     }
     //Load the item by reading the file
-    fun loadItems() {
+    private fun loadItems() {
         try {
-            listOfTasks = FileUtils.readLines(getDataFile(), Charset.defaultCharset())
+            makeList(FileUtils.readLines(getDataFile(), Charset.defaultCharset()))
         }
         catch(ioException : IOException) {
             ioException.printStackTrace()
+        }
+    }
+
+    private fun makeList(list: List<String>) {
+        for(line in list) {
+            val info = line.split("|")
+            val taskName = info[0]
+            val dueDate = info[1]
+            val note = info[2]
+            val task = Task(taskName, dueDate, note)
+            listOfTasks.add(task)
         }
     }
     //Save items by writing them into a file
@@ -112,7 +131,14 @@ class MainActivity : AppCompatActivity() {
     fun launchEditView() {
         // first parameter is the context, second is the class of the activity to launch
         val intent = Intent(this, EditActivity::class.java)
-        intent.putExtra("taskName", listOfTasks.get(post))
-        getResult.launch(intent)
+        intent.putExtra("taskName", listOfTasks[post].taskName)
+        intent.putExtra("dueDate", listOfTasks[post].dueDate)
+        intent.putExtra("note", listOfTasks[post].note)
+        editTask.launch(intent)
+    }
+    private fun launchAddView() {
+        // first parameter is the context, second is the class of the activity to launch
+        val intent = Intent(this, AddActivity::class.java)
+        addTask.launch(intent)
     }
 }

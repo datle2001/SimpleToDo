@@ -21,11 +21,12 @@ import android.view.animation.AlphaAnimation
 import android.view.animation.DecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.get
+import org.w3c.dom.Text
 import java.security.AccessController.getContext
 import java.util.logging.Handler as Handler
 
 
-class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLongClickListener, val shortClickListener: OnShortClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
+class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLongClickListener, val shortClickListener: OnShortClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
 
     interface OnLongClickListener {
         fun onItemLongClicked(position: Int)
@@ -38,7 +39,7 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
-        val contactView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false)
+        val contactView = inflater.inflate(R.layout.simple_list_item_1, parent, false)
         // Return a new holder instance
         return ViewHolder(contactView)
     }
@@ -46,10 +47,15 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
     // Involves populating data into the item through holder
     override fun onBindViewHolder(viewHolder: TaskItemAdapter.ViewHolder, position: Int) {
         // Get the data model based on position
-        val item: String = listOfItems.get(position)
+        val task = listOfItems[position]
+        val taskName: String = task.taskName
+        val dueDate: String = task.dueDate
+        val note: String = task.note
         // Set item views based on your views and data model
-        viewHolder.textView.text = item
 
+        viewHolder.dueDateView.text = dueDate
+        viewHolder.noteView.text = note
+        viewHolder.taskNameView.text = taskName
     }
 
     // Returns the total count of items in the list
@@ -62,10 +68,12 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         //Store references to elements in our layout view
-        val textView : TextView = itemView.findViewById(R.id.text1)
+        val taskNameView : TextView = itemView.findViewById(R.id.text1)
+        val dueDateView : TextView = itemView.findViewById(R.id.text1)
+        val noteView : TextView = itemView.findViewById(R.id.text1)
 
         init{
-            styleTextView()
+            styleTextView(taskNameView)
 
             itemView.setOnLongClickListener{
                 longClickListener.onItemLongClicked(adapterPosition)
@@ -76,19 +84,22 @@ class TaskItemAdapter(val listOfItems: List<String>, val longClickListener: OnLo
                 true
             }
         }
-        fun styleTextView() {
-            textView.setTextColor(Color.parseColor("#ffdf00"))
-            textView.setTextSize(20F)
-            textView.typeface = Typeface.MONOSPACE
-            textView.minHeight = 150
 
-            if (textView.getLayoutParams() is MarginLayoutParams) {
-                (textView.getLayoutParams() as MarginLayoutParams).setMargins(20, 20, 20, 0)
-                textView.requestLayout()
+        private fun styleTextView(view: TextView) {
+            view.setTextColor(Color.parseColor("#ffdf00"))
+            view.setTextSize(25F)
+            view.typeface = Typeface.SANS_SERIF
+            view.minHeight = 150
+
+            if (view.getLayoutParams() is MarginLayoutParams) {
+                (view.getLayoutParams() as MarginLayoutParams).setMargins(20, 20, 20, 0)
+                view.requestLayout()
             }
             val gd = GradientDrawable()
-            gd.setColor(Color.parseColor("#f0fff0"))
-            textView.background = gd
+            gd.setColor(Color.WHITE)
+            gd.cornerRadius = 20f
+            gd.setSize(500, 400)
+            view.background = gd
         }
     }
 }
