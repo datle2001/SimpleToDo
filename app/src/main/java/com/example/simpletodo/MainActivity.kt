@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.animation.AlphaAnimation
 import android.view.animation.DecelerateInterpolator
 import android.widget.ImageView
@@ -89,7 +88,8 @@ class MainActivity : AppCompatActivity() {
         // Set layout manager to position the items
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        findViewById<ImageView>(R.id.addButton).setOnClickListener{
+        val addButton = findViewById<ImageView>(R.id.addButton)
+        addButton.setOnClickListener{
             launchAddView()
         }
     }

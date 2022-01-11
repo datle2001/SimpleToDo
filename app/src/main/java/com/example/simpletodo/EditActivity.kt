@@ -13,11 +13,11 @@ class EditActivity: AppCompatActivity() {
         setContentView(R.layout.activity_edit)
 
         val editName = findViewById<EditText>(R.id.editName)
-        editName.setText(getIntent().getStringExtra("taskName"))
+        editName.setText(intent.getStringExtra("taskName"))
         val editDue = findViewById<EditText>(R.id.editDue)
-        editDue.setText(getIntent().getStringExtra("dueDate"))
+        editDue.setText(intent.getStringExtra("dueDate"))
         val editNote = findViewById<EditText>(R.id.editNote)
-        editNote.setText(getIntent().getStringExtra("note"))
+        editNote.setText(intent.getStringExtra("note"))
 
         findViewById<Button>(R.id.editButton).setOnClickListener{
             val name = editName.text.toString()
@@ -26,7 +26,7 @@ class EditActivity: AppCompatActivity() {
                 val note = findViewById<EditText>(R.id.editNote).text.toString().trim()
                 onSubmit(name, dueDate, note)
             }
-            else Toast.makeText(this, "Please enter task name", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(this, "Please enter task name", Toast.LENGTH_SHORT).show()
         }
     }
     private fun onSubmit( name: String, due: String, note: String) {

@@ -1,10 +1,6 @@
 package com.example.simpletodo
 
-import android.R
-import android.R.attr
-import android.R.attr.*
-import android.content.res.AssetManager
-import android.content.res.AssetManager.AssetInputStream
+
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -12,18 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.graphics.drawable.GradientDrawable
-import androidx.core.view.marginBottom
-
-import android.graphics.Typeface
-import android.util.Log
-import android.view.ViewGroup.MarginLayoutParams
-import android.view.animation.AlphaAnimation
-import android.view.animation.DecelerateInterpolator
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.get
-import org.w3c.dom.Text
-import java.security.AccessController.getContext
-import java.util.logging.Handler as Handler
+import android.view.ViewGroup.*
+import androidx.core.view.setPadding
 
 
 class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLongClickListener, val shortClickListener: OnShortClickListener) : RecyclerView.Adapter<TaskItemAdapter.ViewHolder>() {
@@ -35,11 +21,14 @@ class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLong
         fun onItemShortClicked(position: Int)
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return 1
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskItemAdapter.ViewHolder {
         val context = parent.context
         val inflater = LayoutInflater.from(context)
         // Inflate the custom layout
-        val contactView = inflater.inflate(R.layout.simple_list_item_1, parent, false)
+        val contactView = inflater.inflate(R.layout.task, parent, false)
         // Return a new holder instance
         return ViewHolder(contactView)
     }
@@ -51,8 +40,8 @@ class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLong
         val taskName: String = task.taskName
         val dueDate: String = task.dueDate
         val note: String = task.note
-        // Set item views based on your views and data model
 
+        // Set item views based on your views and data model
         viewHolder.dueDateView.text = dueDate
         viewHolder.noteView.text = note
         viewHolder.taskNameView.text = taskName
@@ -68,13 +57,12 @@ class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLong
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         //Store references to elements in our layout view
-        val taskNameView : TextView = itemView.findViewById(R.id.text1)
-        val dueDateView : TextView = itemView.findViewById(R.id.text1)
-        val noteView : TextView = itemView.findViewById(R.id.text1)
+        val taskNameView: TextView = itemView.findViewById(R.id.taskName)
+        val dueDateView: TextView = itemView.findViewById(R.id.dueDate)
+        val noteView: TextView = itemView.findViewById(R.id.note)
 
         init{
-            styleTextView(taskNameView)
-
+            styleItemView()
             itemView.setOnLongClickListener{
                 longClickListener.onItemLongClicked(adapterPosition)
                 true
@@ -85,21 +73,25 @@ class TaskItemAdapter(val listOfItems: List<Task>, val longClickListener: OnLong
             }
         }
 
-        private fun styleTextView(view: TextView) {
-            view.setTextColor(Color.parseColor("#ffdf00"))
-            view.setTextSize(25F)
-            view.typeface = Typeface.SANS_SERIF
-            view.minHeight = 150
+        private fun styleItemView() {
+            taskNameView.textSize = 23f
+            taskNameView.setPadding(25)
 
-            if (view.getLayoutParams() is MarginLayoutParams) {
-                (view.getLayoutParams() as MarginLayoutParams).setMargins(20, 20, 20, 0)
-                view.requestLayout()
+            dueDateView.textSize = 20f
+            dueDateView.setPadding(25)
+
+            noteView.textSize = 15f
+            noteView.setPadding(45)
+
+            if (itemView.layoutParams is MarginLayoutParams) {
+                (itemView.layoutParams as MarginLayoutParams).setMargins(20, 20, 20, 0)
+                itemView.requestLayout()
             }
             val gd = GradientDrawable()
             gd.setColor(Color.WHITE)
             gd.cornerRadius = 20f
             gd.setSize(500, 400)
-            view.background = gd
+            itemView.background = gd
         }
     }
 }
